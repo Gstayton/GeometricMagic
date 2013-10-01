@@ -18,25 +18,13 @@
 
 package me.cakenggt.GeometricMagic;
 
-import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-
 import net.h31ix.anticheat.api.AnticheatAPI;
 import net.h31ix.anticheat.manage.CheckType;
 import net.milkbowl.vault.economy.Economy;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.*;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -49,6 +37,14 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
+
+import java.io.*;
+import java.util.*;
+
+// Not really needed anymore
+//import org.bukkit.enchantments.Enchantment;
+// Was this even used, given that even plugin.getLogger wasn't even used?
+//import org.bukkit.plugin.PluginLogger;
 
 public class GeometricMagicPlayerListener implements Listener {
 	static GeometricMagic plugin = new GeometricMagic();
@@ -507,8 +503,8 @@ public class GeometricMagicPlayerListener implements Listener {
 		// south positive z
 		// east positive x
 		// west negative x
-		int z = ((sa * 100 + sb) - (na * 100 + nb));
-		int x = ((ea * 100 + eb) - (wa * 100 + wb));
+		int z = ((sa * 100 + sb*10) - (na * 100 + nb*10));
+		int x = ((ea * 100 + eb*10) - (wa * 100 + wb*10));
 		int y = nc + ec + sc + wc;
 
 		double actPointX = actPoint.getX();
@@ -544,7 +540,7 @@ public class GeometricMagicPlayerListener implements Listener {
 		// teleport player
 		player.teleport(teleLoc);
 
-		ItemStack redstonePile = new ItemStack(331, 5 + na + nb + nc + sa + sb + sc + ea + eb + ec + wa + wb + wc);
+		ItemStack redstonePile = new ItemStack(Material.REDSTONE, 5 + na + nb + nc + sa + sb + sc + ea + eb + ec + wa + wb + wc);
 
 		teleLoc.getWorld().dropItem(teleLoc, redstonePile);
 
@@ -861,6 +857,21 @@ public class GeometricMagicPlayerListener implements Listener {
 			e1.printStackTrace();
 		}
 	}
+// todo Finish method for retrieving nearby items
+    public static void nearbyItems(Block originBlock, int radius) {
+        List<Entity> worldEntities = originBlock.getLocation().getWorld().getEntities();
+        List<Item> itemsList = new ArrayList<Item>();
+            for (Entity item : worldEntities) {
+                if (item.getLocation().distance(originBlock.getLocation()) <= radius && item instanceof Item) {
+                   // itemsList.add(item);
+                }
+            }
+    }
+
+    public static void nearbyItems(Block originBlock) {
+        int defaultRadius = 2;
+        nearbyItems(originBlock, defaultRadius);
+    }
 
 	public static void setCircleEffects(Player player, World world, Block actBlock, Block effectBlock, String arrayString) throws IOException {
 		Location effectBlockLocation = effectBlock.getLocation();
@@ -873,23 +884,25 @@ public class GeometricMagicPlayerListener implements Listener {
 		}
 		if (arrayString.equals("0"))
 			return;
+        // Weapon Circle
 		if (arrayString.equals("[1, 1, 1, 1]") && player.hasPermission("geometricmagic.set.1111")) {
 			if (!hasLearnedCircle(player, arrayString)) {
 				player.sendMessage("You have not yet learned circle " + arrayString + "!");
 				return;
 			}
-			
-			cost = plugin.getConfig().getInt("setcircles.1222.cost");
+            // Insure to account for philosophers stone modifier before setting cap
+			cost = (int) (plugin.getConfig().getInt("setcircles.1222.cost") * philosopherStoneModifier(player));
 			if (cost > 20)
 				cost = 20;
 			
-			if (player.getFoodLevel() >= (cost * philosopherStoneModifier(player))) {
+			if (player.getFoodLevel() >= (cost)) {
 				if (!player.hasPermission("geometricmagic.bypass.hunger")) {
-					player.setFoodLevel((int) (player.getFoodLevel() - (cost * philosopherStoneModifier(player))));
+					player.setFoodLevel((int) (player.getFoodLevel() - (cost)));
 				}
-				
-				int itemID = plugin.getConfig().getInt("setcircles.1111.item");
-				ItemStack item = new ItemStack(itemID);
+                // Conversion over to Material instead of itemID
+                Material itemMat = Material.getMaterial(plugin.getConfig().getString("setcircles.1111.item"));
+				//int itemID = plugin.getConfig().getInt("setcircles.1111.item");
+				ItemStack item = new ItemStack(itemMat);
 				effectBlock.getWorld().dropItem(effectBlockLocation, item);
 				
 			} else {
@@ -897,6 +910,7 @@ public class GeometricMagicPlayerListener implements Listener {
 				return;
 			}
 		}
+        // Repair Circle
 		else if (arrayString.equals("[1, 1, 3, 3]") && player.hasPermission("geometricmagic.set.1133")) {
 			if (!hasLearnedCircle(player, arrayString)) {
 				player.sendMessage("You have not yet learned circle " + arrayString + "!");
@@ -908,18 +922,21 @@ public class GeometricMagicPlayerListener implements Listener {
 					player.setFoodLevel((int) (player.getFoodLevel() - (cost * philosopherStoneModifier(player))));
 				}
 			}
-
+            // Takes effectBlock location and resets durability of any items within radius
 			int count = 0;
-			List<Entity> repairEntities = player.getNearbyEntities(9, 10, 9);
-			for (int i = 0; i < repairEntities.size(); i++) {
-				if (repairEntities.get(i) instanceof Item) {
-					Item droppedItem = (Item) repairEntities.get(i);
+			List<Entity> worldEntities = effectBlock.getLocation().getWorld().getEntities();
+            double radius = 2;
+            for (Entity repairEntity : worldEntities) {
+                if (repairEntity.getLocation().distance(effectBlock.getLocation()) <= radius && repairEntity instanceof Item) {
+                    Item droppedItem = (Item) repairEntity;
+
+            //Old method, new method takes location based on effect block instead of player, resulting in the effected items being more consistent
+            //for (int i = 0; i < repairEntities.size(); i++) {
+			//	if (repairEntities.get(i) instanceof Item) {
+			//		Item droppedItem = (Item) repairEntities.get(i);
 
 					// Item data value
 					int itemCode = droppedItem.getItemStack().getTypeId();
-
-					// Enchantments
-					Map<Enchantment, Integer> effects = droppedItem.getItemStack().getEnchantments();
 
 					// Get cost
 					if ((256 <= itemCode && itemCode <= 258) || (267 <= itemCode && itemCode <= 279) || (283 <= itemCode && itemCode <= 286) || (290 <= itemCode && itemCode <= 294)
@@ -976,64 +993,82 @@ public class GeometricMagicPlayerListener implements Listener {
 							cost = droppedItem.getItemStack().getDurability();
 						cost = cost / 50;
 
-						// Make sure cost is not more than 20
-						if (cost > 20)
-							cost = 20;
+						// Make sure cost is not more than 20 (But why do that before adding in phil modifier?
+						//if (cost > 20)
+						//	cost = 20;
 
-						if (player.getFoodLevel() >= (cost * philosopherStoneModifier(player))) {
+                        //Ensures that the appropriate value is used when determining maximum cost amounts
+                        int philCost = (int) (cost * philosopherStoneModifier(player));
+                        if (philCost > 20)
+                            philCost = 20;
+
+                        if (player.getFoodLevel() >= (philCost)) {
 							if (!player.hasPermission("geometricmagic.bypass.hunger")) {
-								player.setFoodLevel((int) (player.getFoodLevel() - (cost * philosopherStoneModifier(player))));
+								player.setFoodLevel((int) (player.getFoodLevel() - (philCost)));
 							}
-							ItemStack newItem = new ItemStack(itemCode, 1);
 
-							// enchant the item
-							newItem.addEnchantments(effects);
+							//ItemStack newItem = new ItemStack(itemCode, 1);
 
-							droppedItem.remove();
-							effectBlock.getWorld().dropItem(effectBlockLocation, newItem);
+							// enchant the item - Not needed anymore
+							//newItem.addEnchantments(effects);
+
+                            //Reset durability to 0 and display an effect to show that items have been affected
+                            droppedItem.getWorld().playEffect(droppedItem.getLocation(), Effect.SMOKE, 4);
+							droppedItem.getItemStack().setDurability((short)0);
+							//effectBlock.getWorld().dropItem(effectBlockLocation, newItem);
 							count++;
 						} else {
 							player.sendMessage("You feel so hungry...");
 							if (count > 0)
-								effectBlock.getWorld().strikeLightningEffect(effectBlockLocation);
+								//effectBlock.getWorld().strikeLightningEffect(effectBlockLocation);
 							return;
 						}
 					}
 				}
 			}
+        // Conversion Circle
 		} else if (arrayString.equals("[1, 2, 2, 2]") && player.hasPermission("geometricmagic.set.1222")) {
-
-			cost = plugin.getConfig().getInt("setcircles.1222.cost");
-			if (cost > 20)
-				cost = 20;
+            //Set cost to modified value before doing anything with it. This reduces the calls to philosophersStoneModifier()
+			cost = (int) (plugin.getConfig().getInt("setcircles.1222.cost") * philosopherStoneModifier(player));
+			//Why set a maximum before accounting for phil modifier? If the config is wrong, fix it, not the value!
+            //if (cost > 20)
+			//	cost = 20;
 
 			if (!hasLearnedCircle(player, arrayString)) {
 				player.sendMessage("You have not yet learned circle " + arrayString + "!");
 				return;
 			}
 			
-			if (player.getFoodLevel() >= (cost * philosopherStoneModifier(player))) {
+			if (player.getFoodLevel() >= (cost)) {
 				if (!player.hasPermission("geometricmagic.bypass.hunger")) {
-					player.setFoodLevel((int) (player.getFoodLevel() - (cost * philosopherStoneModifier(player))));
+					player.setFoodLevel((int) (player.getFoodLevel() - (cost)));
 				}
 				
-				ItemStack oneRedstone = new ItemStack(331, 1);
-				Item redStack = effectBlock.getWorld().dropItem(effectBlockLocation, oneRedstone);
-				List<Entity> entityList = redStack.getNearbyEntities(5, 10, 5);
-				for (int i = 0; i < entityList.size(); i++) {
-					if (entityList.get(i) instanceof Item) {
+				//ItemStack oneRedstone = new ItemStack(Material.REDSTONE, 1);
+				//Item redStack = effectBlock.getWorld().dropItem(effectBlockLocation, oneRedstone);
+				//List<Entity> entityList = redStack.getNearbyEntities(5, 10, 5);
+
+                List<Entity> entityList = effectBlock.getWorld().getEntities();
+                int radius = 2;
+                for (int i = 0; i < entityList.size(); i++) {
+					if (entityList.get(i) instanceof Item && entityList.get(i).getLocation().distance(effectBlock.getLocation()) <= radius) {
 						Item droppedItem = (Item) entityList.get(i);
 
-						// Skip items because they don't have values
-						if(droppedItem.getItemStack().getTypeId() > 255) {
-							player.sendMessage("You can't use items, only blocks");
+						// Skip items because they don't have values - Unused
+						//if(droppedItem.getItemStack().getTypeId() > 255) {
+
+                        // Check to see if the item is defined in the config file, it it isn't, disallow it
+                        plugin.getLogger().info("values."+droppedItem.getItemStack().getTypeId());
+                        plugin.getLogger().info(String.valueOf(plugin.getConfig().getInt("values."+droppedItem.getItemStack().getTypeId()+".0")));
+					    if(plugin.getConfig().getInt("values."+droppedItem.getItemStack().getTypeId()+".0") == 0) {
+								player.sendMessage("You can't convert this item");
 							continue;
 						}
 
+                        // Still not sure if this is even necessary ?
 						// check if player has permission to break blocks here first
 						if (!checkBlockBreakSimulation(droppedItem.getLocation(), player)) {
 							// player.sendMessage("You don't have permission to do that there.");
-							redStack.remove();
 							return;
 						}
 
@@ -1064,56 +1099,78 @@ public class GeometricMagicPlayerListener implements Listener {
 						 */
 					}
 				}
-				redStack.remove();
 			} else {
 				player.sendMessage("You feel so hungry...");
 				return;
 			}
+        // Philosophers Stone Circle
 		} else if (arrayString.equals("[1, 2, 3, 3]") && player.hasPermission("geometricmagic.set.1233")) {
 
-			cost = plugin.getConfig().getInt("setcircles.1233.cost");
+			cost = (int) (plugin.getConfig().getInt("setcircles.1233.cost") * philosopherStoneModifier(player));
 			if (cost > 20)
 				cost = 20;
-
+            plugin.getLogger().info(String.valueOf(cost));
 			if (!hasLearnedCircle(player, arrayString)) {
 				player.sendMessage("You have not yet learned circle " + arrayString + "!");
 				return;
 			}
-			ItemStack onePortal = new ItemStack(90, 1);
+			ItemStack onePortal = new ItemStack(Material.PORTAL, 1);
 			int fires = 0;
-			List<Entity> entityList = player.getNearbyEntities(10, 10, 10);
-			for (int i = 0; i < entityList.size(); i++) {
-				if (entityList.get(i) instanceof Item) {
-					Item sacrifice = (Item) entityList.get(i);
+            int radius = 2;
+            List<Entity> entityList = effectBlock.getWorld().getEntities();
+            /*
+            Despite how complex it looks, this section simply takes and looks at each stack of fire, adding them together to equal 64.
+            If it gets to 64 and still has leftover, it simply sets the last stack to the leftover amount. On the clients end, this looks far
+            cleaner than spawning a new stack, and allows for a bit cleaner flow control.
 
-					// check if player has permission to break blocks here first
-					if (!checkBlockBreakSimulation(sacrifice.getLocation(), player)) {
-						// player.sendMessage("You don't have permission to do that there.");
-						return;
-					}
-
-					if (sacrifice.getItemStack().getType() == Material.FIRE) {
-						fires += sacrifice.getItemStack().getAmount();
-						sacrifice.remove();
-					}
-				}
-			}
-			if (player.getFoodLevel() >= (cost * philosopherStoneModifier(player))) {
-				if (fires >= 64) {
-					fires -= 64;
-					if (!player.hasPermission("geometricmagic.bypass.hunger")) {
-						player.setFoodLevel((int) (player.getFoodLevel() - (cost * philosopherStoneModifier(player))));
-					}
-					effectBlock.getWorld().dropItem(effectBlockLocation, onePortal);
-				}
-			} else {
-				player.sendMessage("You feel so hungry...");
-			}
-			ItemStack diamondStack = new ItemStack(264, fires);
-			effectBlock.getWorld().dropItem(effectBlockLocation, diamondStack);
+            We achieve this by adding the stacks we have iterated over into an ArrayList (toBeRemoved), except if our total would go above 64.
+            In that case, we simply set the last stack to equal the remains, and ensure that fire = 64
+             */
+			if (player.getFoodLevel() >= (cost)) {
+                List<Item> toBeRemoved = new ArrayList<Item>();
+				for (int i = 0; i < entityList.size(); i++) {
+                    if (entityList.get(i) instanceof Item && entityList.get(i).getLocation().distance(effectBlockLocation) <= radius) {
+					    Item sacrifice = (Item) entityList.get(i);
+                        // Not sure why we are doing this, but we are checking to see if they can actually break blocks here...
+                        if (!checkBlockBreakSimulation(sacrifice.getLocation(), player)) {
+                            return;
+                        }
+                        // Main chunk of sacrifice checking here
+                        if (sacrifice.getItemStack().getType() == Material.FIRE) {
+                            fires += sacrifice.getItemStack().getAmount();
+                            if (fires > 64) {
+                                // Handles if we go over. fires should always equal 64 after this, or else we haven't gotten anywhere.
+                                int extraFires = fires - 64;
+                                fires = 64;
+                                // Sets stack size for the last stack we iterated over.
+                                sacrifice.getItemStack().setAmount(extraFires);
+                                sacrifice.getWorld().playEffect(sacrifice.getLocation(), Effect.SMOKE, 4);
+                            }
+                            else{
+                                // Adds the last stack we completely used to a list of stacks waiting to be removed
+                                toBeRemoved.add(sacrifice);
+                            }
+                            if (fires == 64) {
+                                fires -= 64;
+                                if (!player.hasPermission("geometricmagic.bypass.hunger")) {
+                                    player.setFoodLevel((player.getFoodLevel() - (cost)));
+                                    effectBlock.getWorld().dropItem(effectBlockLocation, new ItemStack(Material.PORTAL, 1));
+                                    Iterator<Item> toBeRemovedit = toBeRemoved.iterator();
+                                    while(toBeRemovedit.hasNext()){
+                                        // Iterate over the list and remove each stack we used
+                                        Item sacrificed = toBeRemovedit.next();
+                                        sacrificed.remove();
+                                    }
+                                }
+                            }
+                        }
+                        }
+                }
+            }
+        // Boron Circle
 		} else if (arrayString.equals("[1, 2, 3, 4]") && player.hasPermission("geometricmagic.set.1234")) {
 
-			cost = plugin.getConfig().getInt("setcircles.1234.cost");
+			cost = (int) (plugin.getConfig().getInt("setcircles.1234.cost") * philosopherStoneModifier(player));
 			if (cost > 20)
 				cost = 20;
 
@@ -1121,13 +1178,13 @@ public class GeometricMagicPlayerListener implements Listener {
 				player.sendMessage("You have not yet learned circle " + arrayString + "!");
 				return;
 			}
-			if (player.getFoodLevel() >= (cost * philosopherStoneModifier(player))) {
+			if (player.getFoodLevel() >= (cost)) {
 				if (!player.hasPermission("geometricmagic.bypass.hunger")) {
-					player.setFoodLevel((int) (player.getFoodLevel() - (cost * philosopherStoneModifier(player))));
+					player.setFoodLevel((int) (player.getFoodLevel() - (cost)));
 				}
 				player.sendMessage(ChatColor.GREEN + "The four elements, like man alone, are weak. But together they form the strong fifth element: boron -Brother Silence");
 				int amount = plugin.getConfig().getInt("setcircles.1234.amount");
-				ItemStack oneRedstone = new ItemStack(331, amount);
+				ItemStack oneRedstone = new ItemStack(Material.REDSTONE, amount);
 
 				effectBlock.getWorld().dropItem(effectBlockLocation, oneRedstone);
 
@@ -1135,9 +1192,10 @@ public class GeometricMagicPlayerListener implements Listener {
 				player.sendMessage("You feel so hungry...");
 				return;
 			}
+        // Soul Circle
 		} else if (arrayString.equals("[2, 2, 2, 3]") && player.hasPermission("geometricmagic.set.2223")) {
 
-			cost = plugin.getConfig().getInt("setcircles.2223.cost");
+			cost = (int) (plugin.getConfig().getInt("setcircles.2223.cost") * philosopherStoneModifier(player));
 			if (cost > 20)
 				cost = 20;
 
@@ -1145,7 +1203,7 @@ public class GeometricMagicPlayerListener implements Listener {
 				player.sendMessage("You have not yet learned circle " + arrayString + "!");
 				return;
 			}
-			ItemStack oneRedstone = new ItemStack(331, 1);
+			ItemStack oneRedstone = new ItemStack(Material.REDSTONE, 1);
 			if (player.getFoodLevel() >= (cost * philosopherStoneModifier(player))) {
 				if (!player.hasPermission("geometricmagic.bypass.hunger")) {
 					player.setFoodLevel((int) (player.getFoodLevel() - (cost * philosopherStoneModifier(player))));
@@ -1791,7 +1849,7 @@ public class GeometricMagicPlayerListener implements Listener {
 
 	public static void humanTransmutation(Player player) throws IOException {
 		if (new File("plugins/GeometricMagic/").mkdirs())
-			System.out.println("[GeometricMagic] Sacrifices file created.");
+			plugin.getLogger().info("Sacrifices file created.");
 		File myFile = new File("plugins/GeometricMagic/sacrifices.txt");
 		if (myFile.exists()) {
 			Scanner inputFile = new Scanner(myFile);
@@ -1808,7 +1866,7 @@ public class GeometricMagicPlayerListener implements Listener {
 			inputFile.close();
 		} else {
 			PrintWriter outputFile = new PrintWriter("plugins/GeometricMagic/sacrifices.txt");
-			System.out.println("[GeometricMagic] Sacrifices file created.");
+			plugin.getLogger().info("Sacrifices file created.");
 			outputFile.close();
 		}
 		FileWriter fWriter = new FileWriter("plugins/GeometricMagic/sacrifices.txt", true);
@@ -1943,8 +2001,8 @@ public class GeometricMagicPlayerListener implements Listener {
 				}
 			}
 			else
-				System.out.println("[GeometricMagic] Error creating necessary folder(s)!" +
-						" Check your read/write permissions");
+				plugin.getLogger().info("Error creating necessary folder(s)!" +
+                        " Check your read/write permissions");
 		}
 	}
 

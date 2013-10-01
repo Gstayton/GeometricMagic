@@ -19,7 +19,8 @@
 package me.cakenggt.GeometricMagic;
 
 import org.bukkit.Material;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,12 +43,12 @@ public class GeometricMagicDamageListener implements Listener {
 	public void onEntityDamage(EntityDamageEvent event) {
 		// System.out.println("entity damage event");
 		Entity entity = event.getEntity();
-		int damage = event.getDamage();
+		int damage = (int) event.getDamage();
 
 		if (entity instanceof Player) {
 			// System.out.println("instance of player");
 			Player player = (Player) entity;
-			int health = player.getHealth();
+			int health = (int) player.getHealth();
 
 			PlayerInventory playerInventory = player.getInventory();
 
