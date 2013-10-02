@@ -47,8 +47,9 @@ public class GeometricMagicAutoUpdater implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-			int latestVersion = Integer.parseInt(rawVersion.replace(".", ""));
+
+            assert rawVersion != null;
+            int latestVersion = Integer.parseInt(rawVersion.replace(".", ""));
 			
 			if (latestVersion > pluginVersion) {
 				plugin.upToDate = false;

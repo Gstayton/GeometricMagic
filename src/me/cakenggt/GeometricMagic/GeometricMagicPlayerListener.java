@@ -857,20 +857,22 @@ public class GeometricMagicPlayerListener implements Listener {
 			e1.printStackTrace();
 		}
 	}
-// todo Finish method for retrieving nearby items
-    public static void nearbyItems(Block originBlock, int radius) {
+    // Method to take nearby world entities, and return all valid Item instances in a list
+    // Possibly make it possible to use this for both blocks and items? Would make even less redundant code...
+    public static List<Entity> nearbyItems(Block originBlock, int radius) {
         List<Entity> worldEntities = originBlock.getLocation().getWorld().getEntities();
-        List<Item> itemsList = new ArrayList<Item>();
+        List<Entity> itemsList = new ArrayList<Entity>();
             for (Entity item : worldEntities) {
                 if (item.getLocation().distance(originBlock.getLocation()) <= radius && item instanceof Item) {
-                   // itemsList.add(item);
+                   itemsList.add(item);
                 }
             }
+        return itemsList;
     }
 
-    public static void nearbyItems(Block originBlock) {
+    public static List<Entity> nearbyItems(Block originBlock) {
         int defaultRadius = 2;
-        nearbyItems(originBlock, defaultRadius);
+        return nearbyItems(originBlock, defaultRadius);
     }
 
 	public static void setCircleEffects(Player player, World world, Block actBlock, Block effectBlock, String arrayString) throws IOException {
@@ -924,78 +926,22 @@ public class GeometricMagicPlayerListener implements Listener {
 			}
             // Takes effectBlock location and resets durability of any items within radius
 			int count = 0;
-			List<Entity> worldEntities = effectBlock.getLocation().getWorld().getEntities();
-            double radius = 2;
-            for (Entity repairEntity : worldEntities) {
-                if (repairEntity.getLocation().distance(effectBlock.getLocation()) <= radius && repairEntity instanceof Item) {
+            List<Entity> itemsList = nearbyItems(effectBlock);
+            for (Entity repairEntity : itemsList) {
+                if (repairEntity instanceof Item) {
                     Item droppedItem = (Item) repairEntity;
 
-            //Old method, new method takes location based on effect block instead of player, resulting in the effected items being more consistent
+            //Old method, new method takes location based on effect block instead of player, resulting in the affected items being more consistent
             //for (int i = 0; i < repairEntities.size(); i++) {
 			//	if (repairEntities.get(i) instanceof Item) {
 			//		Item droppedItem = (Item) repairEntities.get(i);
 
-					// Item data value
-					int itemCode = droppedItem.getItemStack().getTypeId();
-
-					// Get cost
-					if ((256 <= itemCode && itemCode <= 258) || (267 <= itemCode && itemCode <= 279) || (283 <= itemCode && itemCode <= 286) || (290 <= itemCode && itemCode <= 294)
-							|| (298 <= itemCode && itemCode <= 317) || itemCode == 259 || itemCode == 346 || itemCode == 359 || itemCode == 261) {
-						if ((256 <= itemCode && itemCode <= 258) || itemCode == 267 || itemCode == 292)
-							cost = droppedItem.getItemStack().getDurability();
-						if ((268 <= itemCode && itemCode <= 271) || itemCode == 290)
-							cost = droppedItem.getItemStack().getDurability();
-						if ((272 <= itemCode && itemCode <= 275) || itemCode == 291)
-							cost = droppedItem.getItemStack().getDurability();
-						if ((276 <= itemCode && itemCode <= 279) || itemCode == 293)
-							cost = droppedItem.getItemStack().getDurability();
-						if ((283 <= itemCode && itemCode <= 286) || itemCode == 294)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 298)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 299)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 300)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 301)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 306)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 307)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 308)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 309)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 310)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 311)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 312)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 313)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 314)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 315)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 316)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 317)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 259)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 346)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 359)
-							cost = droppedItem.getItemStack().getDurability();
-						if (itemCode == 261)
-							cost = droppedItem.getItemStack().getDurability();
-						cost = cost / 50;
-
-						// Make sure cost is not more than 20 (But why do that before adding in phil modifier?
-						//if (cost > 20)
-						//	cost = 20;
+					// No longer taking itemId() into account with a massive check; We already know it's an instanceof Item, so its itemStack() has a durability.
+					int itemDurability = droppedItem.getItemStack().getDurability();
+                	// Get cost
+                    // Checking for non-zeroes keeps us from doing something stupid, like trying to repair a potion
+					if (itemDurability > 0){
+						cost = itemDurability / 50;
 
                         //Ensures that the appropriate value is used when determining maximum cost amounts
                         int philCost = (int) (cost * philosopherStoneModifier(player));
@@ -1020,6 +966,7 @@ public class GeometricMagicPlayerListener implements Listener {
 						} else {
 							player.sendMessage("You feel so hungry...");
 							if (count > 0)
+                                // If the lightning is called from somewhere else, what are we doing calling it here as well? Especially if we didn't even do anything...
 								//effectBlock.getWorld().strikeLightningEffect(effectBlockLocation);
 							return;
 						}
@@ -1030,7 +977,8 @@ public class GeometricMagicPlayerListener implements Listener {
 		} else if (arrayString.equals("[1, 2, 2, 2]") && player.hasPermission("geometricmagic.set.1222")) {
             //Set cost to modified value before doing anything with it. This reduces the calls to philosophersStoneModifier()
 			cost = (int) (plugin.getConfig().getInt("setcircles.1222.cost") * philosopherStoneModifier(player));
-			//Why set a maximum before accounting for phil modifier? If the config is wrong, fix it, not the value!
+			// Why set a maximum before accounting for phil modifier? If the config is wrong, fix it, not the value!
+            // This potentially allows for config setters to make certain circles require the philosophers stone to meet the energy cost requirements
             //if (cost > 20)
 			//	cost = 20;
 

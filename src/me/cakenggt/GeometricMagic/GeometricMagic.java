@@ -18,16 +18,11 @@
 
 package me.cakenggt.GeometricMagic;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Scanner;
-
 import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -35,12 +30,18 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 public class GeometricMagic extends JavaPlugin {
 	private Listener playerListener;
 	private Listener entityListener;
 	private static Economy economy;
 	File configFile;
-	public boolean autoUpdateNotify;
+	// autoUpdater isn't used
+	//public boolean autoUpdateNotify;
 	public boolean upToDate = true;
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -86,7 +87,7 @@ public class GeometricMagic extends JavaPlugin {
 					return true;
 				} else if (args.length == 0 && !hasFlint && sacrifices) {
 					// they don't have flint so give them one 
-					ItemStack oneFlint = new ItemStack(318, 1);
+					ItemStack oneFlint = new ItemStack(Material.FLINT, 1);
 					player.getWorld().dropItem(player.getLocation(), oneFlint);
 					return true;
 				} else if (!sacrifices) {
