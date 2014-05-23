@@ -47,7 +47,7 @@ import java.util.*;
 //import org.bukkit.plugin.PluginLogger;
 
 public class GeometricMagicPlayerListener implements Listener {
-	static GeometricMagic plugin = new GeometricMagic();
+	static GeometricMagic plugin;
 
 	public GeometricMagicPlayerListener(GeometricMagic instance) {
 		plugin = instance;
@@ -926,8 +926,7 @@ public class GeometricMagicPlayerListener implements Listener {
 			}
             // Takes effectBlock location and resets durability of any items within radius
 			int count = 0;
-            List<Entity> itemsList = nearbyItems(effectBlock);
-            for (Entity repairEntity : itemsList) {
+            for (Entity repairEntity : nearbyItems(effectBlock)) {
                 if (repairEntity instanceof Item) {
                     Item droppedItem = (Item) repairEntity;
 
@@ -996,24 +995,19 @@ public class GeometricMagicPlayerListener implements Listener {
 				//Item redStack = effectBlock.getWorld().dropItem(effectBlockLocation, oneRedstone);
 				//List<Entity> entityList = redStack.getNearbyEntities(5, 10, 5);
 
-                List<Entity> entityList = effectBlock.getWorld().getEntities();
-                int radius = 2;
-                for (int i = 0; i < entityList.size(); i++) {
-					if (entityList.get(i) instanceof Item && entityList.get(i).getLocation().distance(effectBlock.getLocation()) <= radius) {
-						Item droppedItem = (Item) entityList.get(i);
+                for (Entity convertEnt : nearbyItems(effectBlock)) {
+					if (convertEnt instanceof Item) {
+						Item droppedItem = (Item) convertEnt;
 
 						// Skip items because they don't have values - Unused
 						//if(droppedItem.getItemStack().getTypeId() > 255) {
 
                         // Check to see if the item is defined in the config file, it it isn't, disallow it
-                        plugin.getLogger().info("values."+droppedItem.getItemStack().getTypeId());
-                        plugin.getLogger().info(String.valueOf(plugin.getConfig().getInt("values."+droppedItem.getItemStack().getTypeId()+".0")));
 					    if(plugin.getConfig().getInt("values."+droppedItem.getItemStack().getTypeId()+".0") == 0) {
 								player.sendMessage("You can't convert this item");
 							continue;
 						}
 
-                        // Still not sure if this is even necessary ?
 						// check if player has permission to break blocks here first
 						if (!checkBlockBreakSimulation(droppedItem.getLocation(), player)) {
 							// player.sendMessage("You don't have permission to do that there.");
@@ -1023,7 +1017,6 @@ public class GeometricMagicPlayerListener implements Listener {
 						int valueArray = getBlockValue(plugin, droppedItem.getItemStack().getTypeId(), droppedItem.getItemStack().getData().getData());
 
 						int pay = (valueArray * droppedItem.getItemStack().getAmount());
-
 						if (getTransmutationCostSystem(plugin).equalsIgnoreCase("vault")) {
 							Economy econ = GeometricMagic.getEconomy();
 							if (pay > 0) {
@@ -1869,7 +1862,7 @@ public class GeometricMagicPlayerListener implements Listener {
 		redStack.remove();
 		return status;
 	}
-	
+
 	public static void storageCircle(Location startLoc, Location endLoc, Player player, int size) {
 		File folder = new File("plugins/GeometricMagic/storage/");
 		File file = new File("plugins/GeometricMagic/storage/" + player.getName() + "." + String.valueOf(size));
@@ -2284,7 +2277,7 @@ public class GeometricMagicPlayerListener implements Listener {
 		}
 		out.close();
 	}
-	
+
 	public static String getTransmutationCostSystem(GeometricMagic plugin) {
 		return plugin.getConfig().getString("transmutation.cost").toString();
 	}
