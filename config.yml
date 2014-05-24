@@ -19,6 +19,9 @@
 # DO NOT MODIFY THIS VALUE!
 version: 2.7.6
 
+# Auto-notify for updates:
+autoNotify: True
+
 # GENERAL SECTION
 general:
 

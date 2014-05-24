@@ -35,11 +35,11 @@ public class GeometricMagicAutoUpdater implements Runnable {
 	}
 	
 	public void run() {
-		while (true) {
+		while (plugin.getConfig().getBoolean("autoNotify")) {
 			String rawVersion = null;
 			
 			try {
-				URL url = new URL("http://dl.dropbox.com/u/56151340/BukkitPlugins/GeometricMagic/latest.txt");
+				URL url = new URL("https://dl.dropboxusercontent.com/s/nb0jvrrx4qp58xo/latest.txt");
 				Scanner scanner = new Scanner(url.openStream());
 				rawVersion = scanner.next();
 			} catch (MalformedURLException e) {
