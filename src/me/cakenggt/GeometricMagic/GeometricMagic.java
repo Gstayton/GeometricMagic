@@ -332,7 +332,12 @@ public class GeometricMagic extends JavaPlugin {
 		}
 		
 		// Plugin metrics
-		// startPluginMetrics();
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
 		
 		// Get plugin version for auto-update
 		int pluginVersion = Integer.parseInt(this.getDescription().getVersion().replace(".", ""));
