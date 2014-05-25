@@ -332,19 +332,14 @@ public class GeometricMagic extends JavaPlugin {
 		}
 		
 		// Plugin metrics
-        try {
-            Metrics metrics = new Metrics(this);
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the stats :-(
-        }
+        startPluginMetrics();
 		
 		// Get plugin version for auto-update
 		int pluginVersion = Integer.parseInt(this.getDescription().getVersion().replace(".", ""));
 		
 		// Start auto-update if applicable
 		if (getConfig().getBoolean("auto-update-notify")) {
-			new Thread((new GeometricMagicAutoUpdater(this, pluginVersion))).start();
+            Updater updater = new Updater(this, 40378, this.getFile(), Updater.UpdateType.DEFAULT, false);
 		}
 	}
 
@@ -368,6 +363,7 @@ public class GeometricMagic extends JavaPlugin {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
 		} catch (IOException e) {
+            getLogger().warning("Failed to start Metrics");
 			// Failed to submit the stats :-(
 		}
 	}

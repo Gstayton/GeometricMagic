@@ -62,7 +62,7 @@ setcircles:
         cost: 5
         # The item ID to be given to the player
         # Default: Iron sword
-        item: 267
+        item: IRON_SWORD
     
     # Repair Circle
     1133: []

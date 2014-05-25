@@ -886,6 +886,7 @@ public class GeometricMagicPlayerListener implements Listener {
 		}
 		if (arrayString.equals("0"))
 			return;
+
         // Weapon Circle
 		if (arrayString.equals("[1, 1, 1, 1]") && player.hasPermission("geometricmagic.set.1111")) {
 			if (!hasLearnedCircle(player, arrayString)) {
