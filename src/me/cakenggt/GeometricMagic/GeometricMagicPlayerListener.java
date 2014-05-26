@@ -41,11 +41,6 @@ import org.bukkit.plugin.PluginManager;
 import java.io.*;
 import java.util.*;
 
-// Not really needed anymore
-//import org.bukkit.enchantments.Enchantment;
-// Was this even used, given that even plugin.getLogger wasn't even used?
-//import org.bukkit.plugin.PluginLogger;
-
 public class GeometricMagicPlayerListener implements Listener {
 	static GeometricMagic plugin;
 
