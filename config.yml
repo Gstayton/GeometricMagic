@@ -19,8 +19,10 @@
 # DO NOT MODIFY THIS VALUE!
 version: 2.8.6
 
-# Auto-notify for updates:
-autoNotify: True
+# Toggle Gravity's auto updater:
+autoUpdate: True
+# Select update type, available options are DEFAULT, NO_DOWNLOAD, and NO_VERSION_CHECK.
+updateType: DEFAULT
 
 # GENERAL SECTION
 general:

@@ -212,9 +212,7 @@ public class GeometricMagicPlayerListener implements Listener {
 					AnticheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
 				}
 			}
-
-		} else
-			return;
+		}
 	}
 
 	public static void circleChooser(Player player, World world, Block actBlock) {
@@ -239,6 +237,7 @@ public class GeometricMagicPlayerListener implements Listener {
 				&& actBlock.getRelative(0, 0, 3).getType() != Material.REDSTONE_WIRE) {
 			if (player.hasPermission("geometricmagic.micro")) {
 				// System.out.println("micro");
+                plugin.getLogger().info(actBlock.getRelative(BlockFace.DOWN).toString());
 				microCircle(player, world, actBlock);
 			} else
 				player.sendMessage("You do not have permission to use this circle");
@@ -618,7 +617,34 @@ public class GeometricMagicPlayerListener implements Listener {
 		Location circleEnd = actBlock.getLocation();
 		Material fromType = actBlock.getType();
 		Material toType = actBlock.getType();
+        Location[] templateCorners = new Location[0];
 		boolean lightning = false;
+
+        BlockFace direction = null;
+        BlockFace check = null;
+        Block currentBlock;
+        int numCorners = 0;
+        
+        currentBlock = actBlock;
+        
+        if (actBlock.getRelative(BlockFace.SOUTH).getType() == Material.REDSTONE_WIRE && actBlock.getRelative(BlockFace.NORTH).getType() == Material.REDSTONE_WIRE)
+        {
+            direction = BlockFace.NORTH;
+            check = BlockFace.WEST;
+        }
+        else if ((actBlock.getRelative(BlockFace.WEST).getType() == Material.REDSTONE_WIRE && actBlock.getRelative(BlockFace.EAST).getType() == Material.REDSTONE_WIRE))
+        {
+            direction = BlockFace.EAST;
+            check = BlockFace.SOUTH;
+        } else { return; }
+        while (currentBlock.getRelative(direction).getType() == Material.REDSTONE_WIRE) {
+            currentBlock = currentBlock.getRelative(direction);
+            halfWidth++;
+            if ((currentBlock.getRelative(check).getType() == Material.REDSTONE_WIRE || currentBlock.getRelative(check.getOppositeFace()).getType() != Material.REDSTONE_WIRE) && currentBlock.getRelative(direction).getType() != Material.REDSTONE_WIRE) {
+                templateCorners[numCorners] = currentBlock.getLocation();
+            }
+        }
+
 		if (actBlock.getRelative(0, 0, -1).getType() == Material.REDSTONE_WIRE && actBlock.getRelative(0, 0, 1).getType() == Material.REDSTONE_WIRE) {
 			halfWidth = 0;
 			while (actBlock.getRelative(0, 0, -1 * halfWidth).getType() == Material.REDSTONE_WIRE) {
@@ -1056,7 +1082,6 @@ public class GeometricMagicPlayerListener implements Listener {
 				player.sendMessage("You have not yet learned circle " + arrayString + "!");
 				return;
 			}
-			ItemStack onePortal = new ItemStack(Material.PORTAL, 1);
 			int fires = 0;
             int radius = 2;
             List<Entity> entityList = effectBlock.getWorld().getEntities();
@@ -1752,13 +1777,10 @@ public class GeometricMagicPlayerListener implements Listener {
 		if (getTransmutationCostSystem(plugin).equalsIgnoreCase("vault")) {
 			Economy econ = GeometricMagic.getEconomy();
 
-			double balance = econ.getBalance(player.getName());
-
-			return balance;
+            return econ.getBalance(player.getName());
 		} else if (getTransmutationCostSystem(plugin).equalsIgnoreCase("xp")) {
-			double balance = player.getLevel();
 
-			return balance;
+            return (double) player.getLevel();
 		}
 		return 0;
 	}
@@ -2338,4 +2360,25 @@ public class GeometricMagicPlayerListener implements Listener {
 	public static PluginManager getPluginManager() {
 		return plugin.getServer().getPluginManager();
 	}
+
+    // Gstayton's helper function.
+
+    public static boolean playerTransaction(Player player, double amount) {
+        if (GeometricMagicPlayerListener.getTransmutationCostSystem(plugin).equalsIgnoreCase("vault")) {
+
+            Economy econ = GeometricMagic.getEconomy();
+
+            // Deposit or withdraw to players Vault account
+            if (amount > 0) {
+                econ.depositPlayer(player.getName(), amount);
+            } else if (amount < 0) {
+                econ.withdrawPlayer(player.getName(), amount * -1);
+            }
+            return true;
+        } else if (GeometricMagicPlayerListener.getTransmutationCostSystem(plugin).equalsIgnoreCase("xp")) {
+            player.setLevel((int) (player.getLevel() + amount));
+            return true;
+        }
+        return false;
+    }
 }

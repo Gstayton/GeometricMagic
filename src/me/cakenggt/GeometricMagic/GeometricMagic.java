@@ -1,17 +1,17 @@
 /**
  * GeometricMagic allows players to draw redstone circles on the ground to do things such as teleport and transmute blocks.
- * Copyright (C) 2012  Alec Cox (cakenggt), Andrew Stevanus (Hoot215) <hoot893@gmail.com>
- * 
+ * Copyright (C) 2012, 2013, 2014  Alec Cox (cakenggt), Andrew Stevanus (Hoot215) <hoot893@gmail.com>, Nathan Thomas (Gstayton)
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -338,8 +338,18 @@ public class GeometricMagic extends JavaPlugin {
 		int pluginVersion = Integer.parseInt(this.getDescription().getVersion().replace(".", ""));
 		
 		// Start auto-update if applicable
-		if (getConfig().getBoolean("auto-update-notify")) {
-            Updater updater = new Updater(this, 40378, this.getFile(), Updater.UpdateType.DEFAULT, false);
+		if (getConfig().getBoolean("autoUpdate")) {
+            Updater.UpdateType updateType = null;
+            if (getConfig().getString("updateType").toLowerCase() == "default") {
+                updateType = Updater.UpdateType.DEFAULT;
+            } else if (getConfig().getString("updateType").toLowerCase() == "no_download") {
+                updateType = Updater.UpdateType.NO_DOWNLOAD;
+            } else if (getConfig().getString("updateType").toLowerCase() == "no_version_check") {
+                updateType = Updater.UpdateType.NO_VERSION_CHECK;
+            } else {
+                updateType = Updater.UpdateType.NO_DOWNLOAD;
+            }
+            Updater updater = new Updater(this, 40378, this.getFile(), updateType, false);
 		}
 	}
 

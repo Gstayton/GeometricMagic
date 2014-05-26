@@ -21,13 +21,16 @@ package me.cakenggt.GeometricMagic;
 import net.h31ix.anticheat.api.AnticheatAPI;
 import net.h31ix.anticheat.manage.CheckType;
 import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.material.MaterialData;
+
+import java.lang.reflect.Array;
 
 public class GeometricMagicTransmutationThread implements Runnable {
 	private GeometricMagic plugin;
@@ -64,71 +67,76 @@ public class GeometricMagicTransmutationThread implements Runnable {
 	}
 	
 	public void run() {
-		if (start.getX() < end.getX()) {
-			if (start.getZ() < end.getZ()) {
-				for (int x = (int) start.getX(); x <= end.getX(); x++) {
-					for (int y = (int) start.getY(); y <= end.getY(); y++) {
-						for (int z = (int) start.getZ(); z <= end.getZ(); z++) {
-							Location loc = new Location(start.getWorld(), (double) x, (double) y, (double) z);
-							transmuteBlock(a, fromData, b, toData, loc, playerName, charge);
-							try {
-								Thread.sleep(rate);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			}
-			else {
-				for (int x = (int) start.getX(); x <= end.getX(); x++) {
-					for (int y = (int) start.getY(); y <= end.getY(); y++) {
-						for (int z = (int) start.getZ(); z >= end.getZ(); z--) {
-							Location loc = new Location(start.getWorld(), (double) x, (double) y, (double) z);
-							transmuteBlock(a, fromData, b, toData, loc, playerName, charge);
-							try {
-								Thread.sleep(rate);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			}
-		}
-		else {
-			if (start.getZ() < end.getZ()) {
-				for (int x = (int) start.getX(); x >= end.getX(); x--) {
-					for (int y = (int) start.getY(); y <= end.getY(); y++) {
-						for (int z = (int) start.getZ(); z <= end.getZ(); z++) {
-							Location loc = new Location(start.getWorld(), (double) x, (double) y, (double) z);
-							transmuteBlock(a, fromData, b, toData, loc, playerName, charge);
-							try {
-								Thread.sleep(rate);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			}
-			else {
-				for (int x = (int) start.getX(); x >= end.getX(); x--) {
-					for (int y = (int) start.getY(); y <= end.getY(); y++) {
-						for (int z = (int) start.getZ(); z >= end.getZ(); z--) {
-							Location loc = new Location(start.getWorld(), (double) x, (double) y, (double) z);
-							transmuteBlock(a, fromData, b, toData, loc, playerName, charge);
-							try {
-								Thread.sleep(rate);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			}
-		}
+        // transmuteArea()
+        main();
 	}
+
+    public void main() {
+        if (start.getX() < end.getX()) {
+            if (start.getZ() < end.getZ()) {
+                for (int x = (int) start.getX(); x <= end.getX(); x++) {
+                    for (int y = (int) start.getY(); y <= end.getY(); y++) {
+                        for (int z = (int) start.getZ(); z <= end.getZ(); z++) {
+                            Location loc = new Location(start.getWorld(), (double) x, (double) y, (double) z);
+                            transmuteBlock(a, fromData, b, toData, loc, playerName, charge);
+                            try {
+                                Thread.sleep(rate);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                for (int x = (int) start.getX(); x <= end.getX(); x++) {
+                    for (int y = (int) start.getY(); y <= end.getY(); y++) {
+                        for (int z = (int) start.getZ(); z >= end.getZ(); z--) {
+                            Location loc = new Location(start.getWorld(), (double) x, (double) y, (double) z);
+                            transmuteBlock(a, fromData, b, toData, loc, playerName, charge);
+                            try {
+                                Thread.sleep(rate);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            if (start.getZ() < end.getZ()) {
+                for (int x = (int) start.getX(); x >= end.getX(); x--) {
+                    for (int y = (int) start.getY(); y <= end.getY(); y++) {
+                        for (int z = (int) start.getZ(); z <= end.getZ(); z++) {
+                            Location loc = new Location(start.getWorld(), (double) x, (double) y, (double) z);
+                            transmuteBlock(a, fromData, b, toData, loc, playerName, charge);
+                            try {
+                                Thread.sleep(rate);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                for (int x = (int) start.getX(); x >= end.getX(); x--) {
+                    for (int y = (int) start.getY(); y <= end.getY(); y++) {
+                        for (int z = (int) start.getZ(); z >= end.getZ(); z--) {
+                            Location loc = new Location(start.getWorld(), (double) x, (double) y, (double) z);
+                            transmuteBlock(a, fromData, b, toData, loc, playerName, charge);
+                            try {
+                                Thread.sleep(rate);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 	
 	public void transmuteBlock(final Material a, final byte fromData, final Material b, final byte toData,
 										final Location startBlockLoc, final String playerName, final boolean charge) {
@@ -287,4 +295,119 @@ public class GeometricMagicTransmutationThread implements Runnable {
 			}
 		}, 0L);
 	}
+
+    private static Location[] sortCorners(Location[] corners) {
+        int j;
+        boolean flag = true;
+        int temp;
+        Location tempL;
+        int num[] = new int[0];
+
+        for (int i = 0; i < corners.length; i++) {
+            num[i] = (corners[i].getBlockX() - corners[i].getBlockZ());
+        }
+
+        while (flag) {
+            flag = false;
+            for (j = 0; j < corners.length - 1; j++) {
+                if (num[j] > num[j + 1]) {
+                    temp = num[j];
+                    num[j] = num[j + 1];
+                    num[j + 1] = temp;
+
+                    tempL = corners[j];
+                    corners[j] = corners[j + 1];
+                    corners[j + 1] = tempL;
+
+                    flag = true;
+                }
+            }
+        }
+        return corners;
+    }
+
+    public boolean transmuteArea(Location[] templateCorners, Location[] areaCorners, MaterialData fromData, MaterialData toData, Player player) {
+        plugin.getLogger().info("transmuteArea");
+
+        if (Array.getLength(templateCorners) != 2 || Array.getLength(areaCorners) != 2) {
+            throw new IllegalArgumentException("Expected array length of 2");
+        }
+
+        templateCorners[2] = new Location(templateCorners[0].getWorld(), templateCorners[0].getX(), templateCorners[0].getY(), templateCorners[1].getZ());
+        templateCorners[3] = new Location(templateCorners[0].getWorld(), templateCorners[1].getX(), templateCorners[0].getY(), templateCorners[0].getZ());
+
+        templateCorners = sortCorners(templateCorners);
+        areaCorners = sortCorners(areaCorners);
+
+        int templateSize = (int) templateCorners[0].distance(templateCorners[1]);
+
+        Location areaPointer = areaCorners[0];
+
+        Location templatePointer = templateCorners[0];
+
+        for (int i = 0; i < templateSize; i++) {
+            for (int j = 0; j < templateSize; j++) {
+                for (int k = 0; k < templateSize; k++) {
+                    if (!templatePointer.getBlock().isEmpty()) {
+                        cubicReplace(areaPointer, templateSize, fromData, toData, player);
+                    }
+                    // increment x
+                    templatePointer = templatePointer.getBlock().getRelative(BlockFace.WEST).getLocation();
+                    areaPointer = areaPointer.getBlock().getRelative(BlockFace.WEST, templateSize + 1).getLocation();
+                }
+                //increment z
+                templatePointer = templatePointer.getBlock().getRelative(BlockFace.NORTH).getLocation();
+                areaPointer = areaPointer.getBlock().getRelative(BlockFace.NORTH, templateSize + 1).getLocation();
+            }
+            // increment y
+            templatePointer = templatePointer.getBlock().getRelative(BlockFace.UP).getLocation();
+            areaPointer = areaPointer.getBlock().getRelative(BlockFace.UP, templateSize + 1).getLocation();
+        }
+
+        return true;
+    }
+
+    /**
+     * Replaces selected blocks in a cubic section of the world. <i>pointer</i> needs to be the South-East
+     * corner of the block for this function to work.
+     *
+     * @param pointer  Starting point, assumed to be SE corner
+     * @param size     Size of a single side of the cube desired
+     * @param fromData Filter for blocks to be replaced
+     * @param toData   Data that selected blocks will be replaced with
+     * @param player   Player that will be charged for replacing
+     * @return Number of blocks replaced
+     */
+    public int cubicReplace(Location pointer, int size, MaterialData fromData, MaterialData toData, Player player) {
+
+        int blocks = 0;
+
+        double pay = GeometricMagicPlayerListener.calculatePay(
+                fromData.getItemType(),
+                fromData.getData(),
+                toData.getItemType(),
+                toData.getData(),
+                player
+        );
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                for (int k = 0; k < size; k++) {
+                    plugin.getLogger().info("replace block");
+                    if (pointer.getBlock().getType() == fromData.getItemType() && (-1 * GeometricMagicPlayerListener.getBalance(player) < pay)){
+                        GeometricMagicPlayerListener.playerTransaction(player, pay);
+                        pointer.getBlock().setType(toData.getItemType());
+                        blocks++;
+                    }
+                    // increment x
+                    pointer = pointer.getBlock().getRelative(BlockFace.WEST).getLocation();
+                }
+                // increment z
+                pointer = pointer.getBlock().getRelative(BlockFace.NORTH).getLocation();
+            }
+            // increment y
+            pointer = pointer.getBlock().getRelative(BlockFace.UP).getLocation();
+        }
+        return blocks;
+    }
 }
