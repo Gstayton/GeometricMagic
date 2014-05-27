@@ -57,7 +57,7 @@ public class GeometricMagicDamageListener implements Listener {
                 // System.out.println("contains fire");
                 if (health - damage <= 0) {
                     boolean removedFire = false;
-
+                     ds
                     for (int i = 0; i < playerInventory.getSize() && !removedFire; i++) {
                         ItemStack inventoryItem = playerInventory.getItem(i);
                         if (inventoryItem != null) {
