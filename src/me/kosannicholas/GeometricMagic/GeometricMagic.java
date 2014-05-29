@@ -7,14 +7,17 @@ import java.io.IOException;
 public class GeometricMagic extends JavaPlugin {
     public static GeometricMagic plugin;
 
+
     @Override
     public void onDisable() {
-        System.out.println(this + " is now disabled!");
+        getLogger().info(this + " is now disabled!");
         plugin = null;
     }
 
     @Override
     public void onEnable() {
+        plugin = new GeometricMagic();
+
         startPluginMetrics();
 
         this.getLogger().info("Plugin is enabled");
@@ -22,11 +25,11 @@ public class GeometricMagic extends JavaPlugin {
         // Start auto-update if applicable
         if (getConfig().getBoolean("autoUpdate")) {
             Updater.UpdateType updateType = null;
-            if (getConfig().getString("updateType").toLowerCase() == "default") {
+            if (getConfig().getString("updateType").toLowerCase().equals("default")) {
                 updateType = Updater.UpdateType.DEFAULT;
-            } else if (getConfig().getString("updateType").toLowerCase() == "no_download") {
+            } else if (getConfig().getString("updateType").toLowerCase().equals("no_download")) {
                 updateType = Updater.UpdateType.NO_DOWNLOAD;
-            } else if (getConfig().getString("updateType").toLowerCase() == "no_version_check") {
+            } else if (getConfig().getString("updateType").toLowerCase().equals("no_version_check")) {
                 updateType = Updater.UpdateType.NO_VERSION_CHECK;
             } else {
                 updateType = Updater.UpdateType.NO_DOWNLOAD;
