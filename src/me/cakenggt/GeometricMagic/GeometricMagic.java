@@ -40,8 +40,6 @@ public class GeometricMagic extends JavaPlugin {
 	private Listener entityListener;
 	private static Economy economy;
 	File configFile;
-	// autoUpdater isn't used
-	//public boolean autoUpdateNotify;
 	public boolean upToDate = true;
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -333,14 +331,21 @@ public class GeometricMagic extends JavaPlugin {
 		
 		// Plugin metrics
         startPluginMetrics();
-		
-		// Get plugin version for auto-update
-		int pluginVersion = Integer.parseInt(this.getDescription().getVersion().replace(".", ""));
-		
-		// Start auto-update if applicable
-		if (getConfig().getBoolean("auto-update-notify")) {
-            Updater updater = new Updater(this, 40378, this.getFile(), Updater.UpdateType.DEFAULT, false);
-		}
+
+        // Start auto-update if applicable
+        if (getConfig().getBoolean("autoUpdate")) {
+            Updater.UpdateType updateType = null;
+            if (getConfig().getString("updateType").toLowerCase().equals("default")) {
+                updateType = Updater.UpdateType.DEFAULT;
+            } else if (getConfig().getString("updateType").toLowerCase().equals("no_download")) {
+                updateType = Updater.UpdateType.NO_DOWNLOAD;
+            } else if (getConfig().getString("updateType").toLowerCase().equals("no_version_check")) {
+                updateType = Updater.UpdateType.NO_VERSION_CHECK;
+            } else {
+                updateType = Updater.UpdateType.NO_DOWNLOAD;
+            }
+            Updater updater = new Updater(this, 40378, this.getFile(), updateType, false);
+        }
 	}
 
 	// Vault Support

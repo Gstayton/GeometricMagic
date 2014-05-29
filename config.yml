@@ -19,14 +19,13 @@
 # DO NOT MODIFY THIS VALUE!
 version: 2.8.6
 
-# Auto-notify for updates:
-autoNotify: True
+# auto-update options:
+# Whether or not to enable the auto-update
+autoUpdate: True
+# How auto-update behaves, valid options: DEFAULT, NO-DOWNLOAD, NO-VERSION-CHECK.
+updateType: DEFAULT
 
 # GENERAL SECTION
-general:
-
-    # Automatic notification of plugin updates
-    auto-update-notify: true
 
 # TRANSMUTATION SECTION
 transmutation:
