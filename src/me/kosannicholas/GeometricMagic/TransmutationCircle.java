@@ -7,9 +7,9 @@ public class TransmutationCircle {
 	// Internal state shared between methods.
 	// Final values determine location, size,
 	// and orientation of circle (if one exists).
-	private Block	block;
-	private int 	radius;
-	private XZ	dir;
+	private Block block;
+	private int radius;
+	private XZ dir;
 
 	private enum Shell {
 		SOLID,
@@ -37,7 +37,7 @@ public class TransmutationCircle {
 
 	// True if a circle has been discovered.
 	private boolean identified = false;
-	
+
 	private final GeometricMagicPlugin plugin;
 
 	public TransmutationCircle(GeometricMagicPlugin plugin) {
@@ -58,7 +58,7 @@ public class TransmutationCircle {
 		if (!isChalk(block)) {
 			return;
 		}
-		dir	= new XZ(1, 0);
+		dir = new XZ(1, 0);
 		// Four different directions to check.
 		for (int n = 0; n < 4; n++, dir.rotateCCW()) {
 			final int safety = 1000; // Guard against an infinite loop.
@@ -88,8 +88,8 @@ public class TransmutationCircle {
 	private boolean isCleanCircle() {
 		// Is the circle clean and untarnished?
 		// (i.e. no redstone touching on inner/outer sides)
-		return getShell(radius + 1) == Shell.EMPTY
-			&& getShell(radius - 1) == Shell.EMPTY;
+		return	getShell(radius + 1) == Shell.EMPTY &&
+				getShell(radius - 1) == Shell.EMPTY;
 	}
 
 	// Determines the type of a given shell of radius `r`
@@ -98,8 +98,8 @@ public class TransmutationCircle {
 
 		// Traversal state.
 		int chalk = 0;
-		XZ pos	= new XZ(r, 0);
-		XZ step	= new XZ(0, 1);
+		XZ pos = new XZ(r, 0);
+		XZ step = new XZ(0, 1);
 
 		// Traverse along edge.
 		for (int steps = 1; steps <= numEdgeBlocks; steps++) {
