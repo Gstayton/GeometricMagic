@@ -1,5 +1,5 @@
 name: GeometricMagic
-main: me.kosannicholas.GeometricMagic.GeometricMagicPlugin
+main: me.kosannicholas.geometricmagic.GeometricMagicPlugin
 version: 3.0.0
 authors: [Gstayton]
 softdepend: [Vault]
