@@ -6,9 +6,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 
 public class GeometricMagicPlugin extends JavaPlugin {
-	@Override
-	public void onDisable() {
-		getLogger().info(this + " is now disabled!");
+    @Override
+    public void onDisable() {
+        getLogger().info(this + " is now disabled!");
 	}
 
 	@Override
