@@ -1,4 +1,4 @@
-package me.kosannicholas.GeometricMagic;
+package me.kosannicholas.geometricmagic;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -88,8 +88,9 @@ public class TransmutationCircle {
 	private boolean isCleanCircle() {
 		// Is the circle clean and untarnished?
 		// (i.e. no redstone touching on inner/outer sides)
-		return	getShell(radius + 1) == Shell.EMPTY &&
-				getShell(radius - 1) == Shell.EMPTY;
+		return
+			getShell(radius + 1) == Shell.EMPTY &&
+			getShell(radius - 1) == Shell.EMPTY;
 	}
 
 	// Determines the type of a given shell of radius `r`

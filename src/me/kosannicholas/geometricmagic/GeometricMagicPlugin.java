@@ -1,4 +1,4 @@
-package me.kosannicholas.GeometricMagic;
+package me.kosannicholas.geometricmagic;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
