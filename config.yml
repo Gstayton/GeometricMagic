@@ -3,7 +3,7 @@
 version: 3.0.0
 
 # Toggle Gravity's auto updater:
-autoUpdate: True
+autoUpdate: False
 # Select update type, available options are DEFAULT, NO_DOWNLOAD, and NO_VERSION_CHECK.
 updateType: DEFAULT
 

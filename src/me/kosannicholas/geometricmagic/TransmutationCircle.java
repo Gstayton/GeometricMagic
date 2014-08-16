@@ -4,44 +4,22 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 public class TransmutationCircle {
+	private final GeometricMagicPlugin plugin;
 	// Internal state shared between methods.
 	// Final values determine location, size,
 	// and orientation of circle (if one exists).
-	private Block block;
-	private int radius;
-	private XZ dir;
+	private       Block                block;
+	private       int                  radius;
+	private       XZ                   dir;
+	// True if a circle has been discovered.
+	private boolean identified = false;
 
-	private enum Shell {
-		SOLID,
-		MIXED,
-		FLUSH_TO_EDGE,
-		EMPTY
-	}
-
-	private class XZ extends Object {
-		public int x, z;
-		public XZ(int X, int Z) {
-			x = X;
-			z = Z;
-		}
-		public void rotateCCW() {
-			int X = x;
-			x = -z;
-			z = X;
-		}
+	public TransmutationCircle(GeometricMagicPlugin plugin) {
+		this.plugin = plugin;
 	}
 
 	public static boolean isChalk(Block b) {
 		return b.getType() == Material.REDSTONE_WIRE;
-	}
-
-	// True if a circle has been discovered.
-	private boolean identified = false;
-
-	private final GeometricMagicPlugin plugin;
-
-	public TransmutationCircle(GeometricMagicPlugin plugin) {
-		this.plugin = plugin;
 	}
 
 	public boolean foundCircle() {
@@ -49,7 +27,7 @@ public class TransmutationCircle {
 	}
 
 	public int getInnerWidth() {
-		return 2*radius - 1;
+		return 2 * radius - 1;
 	}
 
 	// Search for a valid circle from the initial block.
@@ -89,13 +67,13 @@ public class TransmutationCircle {
 		// Is the circle clean and untarnished?
 		// (i.e. no redstone touching on inner/outer sides)
 		return
-			getShell(radius + 1) == Shell.EMPTY &&
-			getShell(radius - 1) == Shell.EMPTY;
+				getShell(radius + 1) == Shell.EMPTY &&
+						getShell(radius - 1) == Shell.EMPTY;
 	}
 
 	// Determines the type of a given shell of radius `r`
 	private Shell getShell(int r) {
-		int numEdgeBlocks = 8*r;
+		int numEdgeBlocks = 8 * r;
 
 		// Traversal state.
 		int chalk = 0;
@@ -125,7 +103,7 @@ public class TransmutationCircle {
 		if (chalk == numEdgeBlocks) {
 			return Shell.SOLID;
 		}
-		for(XZ edge = new XZ(-r, -r); edge.x <= r; edge.x++) {
+		for (XZ edge = new XZ(-r, -r); edge.x <= r; edge.x++) {
 			if (!isChalk(getBlockAt(edge))) {
 				return Shell.MIXED;
 			}
@@ -134,14 +112,37 @@ public class TransmutationCircle {
 	}
 
 	private int getGlobalX(XZ v) {
-		return block.getX() + (radius + v.z)*dir.x + v.x*dir.z;
+		return block.getX() + (radius + v.z) * dir.x + v.x * dir.z;
 	}
+
 	private int getGlobalZ(XZ v) {
-		return block.getZ() + (radius + v.z)*dir.z - v.x*dir.x;
+		return block.getZ() + (radius + v.z) * dir.z - v.x * dir.x;
 	}
 
 	private Block getBlockAt(XZ p) {
 		return block.getWorld()
-			.getBlockAt(getGlobalX(p), block.getY(), getGlobalZ(p));
+				.getBlockAt(getGlobalX(p), block.getY(), getGlobalZ(p));
+	}
+
+	private enum Shell {
+		SOLID,
+		MIXED,
+		FLUSH_TO_EDGE,
+		EMPTY
+	}
+
+	private class XZ {
+		public int x, z;
+
+		public XZ(int X, int Z) {
+			x = X;
+			z = Z;
+		}
+
+		public void rotateCCW() {
+			int X = x;
+			x = -z;
+			z = X;
+		}
 	}
 }

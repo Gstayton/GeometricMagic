@@ -1,14 +1,35 @@
 package me.kosannicholas.geometricmagic;
 
+import me.kosannicholas.geometricmagic.Persistence.EnergyStorage;
+import me.kosannicholas.geometricmagic.Persistence.Persistence;
+import me.kosannicholas.geometricmagic.Persistence.PersistenceDatabase;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class GeometricMagicPlugin extends JavaPlugin {
-    @Override
-    public void onDisable() {
-        getLogger().info(this + " is now disabled!");
+	private Persistence persistence;
+
+	@Override
+	public void onDisable() {
+		persistence.shutdown();
+		persistence = null;
+		getLogger().info(this + " is now disabled!");
+	}
+
+	public Persistence getDatabaseHandler() {
+		return persistence;
+	}
+
+	public void pluginInstallDDL() {
+		installDDL();
 	}
 
 	@Override
@@ -22,11 +43,25 @@ public class GeometricMagicPlugin extends JavaPlugin {
 			Updater updater = new Updater(this, 40378, getFile(), updateType, false);
 		}
 
+		FileConfiguration config = getConfig();
+		config.options().copyDefaults(true);
+		saveConfig();
+
 		startPluginMetrics();
+
+		persistence = new PersistenceDatabase(this);
 
 		PluginManager mgr = getServer().getPluginManager();
 		mgr.registerEvents(new PlayerEventListener(this), this);
 
+	}
+
+	@Override
+	public List<Class<?>> getDatabaseClasses() {
+		List<Class<?>> classes = new LinkedList<Class<?>>();
+
+		classes.add(EnergyStorage.class);
+		return classes;
 	}
 
 	private void startPluginMetrics() {
@@ -37,5 +72,39 @@ public class GeometricMagicPlugin extends JavaPlugin {
 			getLogger().warning("Failed to start Metrics: " + e);
 			// Failed to submit the stats :-(
 		}
+	}
+
+	@Override
+	public boolean onCommand(final CommandSender sender,
+													 final Command command,
+													 final String label,
+													 final String[] args) {
+		if (command.getName().equalsIgnoreCase("testenergy")) {
+			if ((sender instanceof Player)) {
+				Player player = (Player) sender;
+				int energy = persistence.getUserEnergy(player.getUniqueId());
+				getLogger().info(Integer.toString(energy));
+				player.sendMessage(Integer.toString(energy));
+			}
+		}
+		if (command.getName().equalsIgnoreCase("testusername")) {
+			if ((sender instanceof Player)) {
+				Player player = (Player) sender;
+				String username = persistence.getUsername(player.getUniqueId());
+				getLogger().info(username);
+				player.sendMessage(username);
+			}
+		}
+		if (command.getName().equalsIgnoreCase("addenergy")) {
+			if ((sender instanceof Player)) {
+				Player player = (Player) sender;
+				int energy = persistence.getUserEnergy(player.getUniqueId());
+				int amount = Integer.parseInt(args[0]);
+				int total = energy + amount;
+				getLogger().info(String.valueOf(total));
+				persistence.setUserEnergy(player.getUniqueId(), total);
+			}
+		}
+		return true;
 	}
 }

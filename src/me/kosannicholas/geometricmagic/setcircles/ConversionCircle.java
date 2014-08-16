@@ -8,10 +8,10 @@ import java.util.List;
 
 
 public class ConversionCircle implements SetCircle {
-    public void act(Block origin) {
-        List<Item> items = Utilities.getNearbyItems(origin.getLocation());
-        for (Item item : items) {
-            item.remove();
-        }
-    }
+	public void act(Block origin) {
+		List<Item> items = Utilities.getNearbyItems(origin.getLocation());
+		for (Item item : items) {
+			item.remove();
+		}
+	}
 }

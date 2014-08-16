@@ -2,4 +2,8 @@ name: GeometricMagic
 main: me.kosannicholas.geometricmagic.GeometricMagicPlugin
 version: 3.0.0
 authors: [Gstayton]
-softdepend: [Vault]
+database: true
+commands:
+    testEnergy:
+    testUsername:
+    addEnergy:
