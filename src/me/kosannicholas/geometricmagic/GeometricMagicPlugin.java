@@ -16,11 +16,21 @@ import java.util.List;
 
 public class GeometricMagicPlugin extends JavaPlugin {
 	private Persistence persistence;
+	private static GeometricMagicPlugin instance = null;
+
+	private FileConfiguration energyValues = null;
+
+	public static GeometricMagicPlugin getInstance() {
+		return instance;
+	}
 
 	@Override
 	public void onDisable() {
 		persistence.shutdown();
 		persistence = null;
+		removeDDL();
+
+		instance = null;
 		getLogger().info(this + " is now disabled!");
 	}
 
@@ -34,6 +44,7 @@ public class GeometricMagicPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		instance = this;
 		getLogger().info("Plugin is enabled");
 
 		// Start auto-update if applicable
@@ -54,6 +65,7 @@ public class GeometricMagicPlugin extends JavaPlugin {
 		PluginManager mgr = getServer().getPluginManager();
 		mgr.registerEvents(new PlayerEventListener(this), this);
 
+		energyValues = new EnergyValues().getEnergyValues();
 	}
 
 	@Override
@@ -103,6 +115,12 @@ public class GeometricMagicPlugin extends JavaPlugin {
 				int total = energy + amount;
 				getLogger().info(String.valueOf(total));
 				persistence.setUserEnergy(player.getUniqueId(), total);
+			}
+		}
+		if (command.getName().equalsIgnoreCase("getEnergyValue")) {
+			if ((sender instanceof Player)) {
+				Player player = (Player) sender;
+				player.sendMessage(energyValues.get(args[0]).toString());
 			}
 		}
 		return true;
