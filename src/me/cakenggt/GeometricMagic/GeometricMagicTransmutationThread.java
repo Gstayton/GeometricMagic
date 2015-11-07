@@ -150,7 +150,7 @@ public class GeometricMagicTransmutationThread implements Runnable {
 				if (player != null) {
 					if (startBlock.getType() == a && startBlock.getData() == fromData) {
 
-						if (-1 * GeometricMagicPlayerListener.getBalance(player) < pay || !charge) {
+						if (-1 * GeometricMagicPlayerListener.getBalance(player) <= pay || !charge) {
 
 							// Block break
 							if (a != Material.AIR && b == Material.AIR) {
