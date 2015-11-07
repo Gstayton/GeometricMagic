@@ -36,6 +36,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 
 import java.io.*;
@@ -1056,8 +1057,14 @@ public class GeometricMagicPlayerListener implements Listener {
 				player.sendMessage("You have not yet learned circle " + arrayString + "!");
 				return;
 			}
-			ItemStack onePortal = new ItemStack(Material.PORTAL, 1);
-			int fires = 0;
+			ItemStack PhiloStone = new ItemStack(Material.NETHER_STAR);
+			ItemMeta philoMeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
+			List<String> lore = new ArrayList<String>();
+			lore.add("Made from the souls of the helpless,");
+			lore.add("it holds immense power.");
+			philoMeta.setDisplayName("Philosphers Stone");
+			philoMeta.setLore(lore);
+			int souls = 0;
             int radius = 2;
             List<Entity> entityList = effectBlock.getWorld().getEntities();
             /*
@@ -1078,25 +1085,25 @@ public class GeometricMagicPlayerListener implements Listener {
                             return;
                         }
                         // Main chunk of sacrifice checking here
-                        if (sacrifice.getItemStack().getType() == Material.FIRE) {
-                            fires += sacrifice.getItemStack().getAmount();
-                            if (fires > 64) {
+                        if (sacrifice.getItemStack().getType() == Material.BONE && sacrifice.getItemStack().getItemMeta().getDisplayName() == "Soul") {
+                            souls += sacrifice.getItemStack().getAmount();
+                            if (souls > 64) {
                                 // Handles if we go over. fires should always equal 64 after this, or else we haven't gotten anywhere.
-                                int extraFires = fires - 64;
-                                fires = 64;
+                                int extraSouls = souls - 64;
+                                souls = 64;
                                 // Sets stack size for the last stack we iterated over.
-                                sacrifice.getItemStack().setAmount(extraFires);
+                                sacrifice.getItemStack().setAmount(extraSouls);
                                 sacrifice.getWorld().playEffect(sacrifice.getLocation(), Effect.SMOKE, 4);
                             }
                             else{
                                 // Adds the last stack we completely used to a list of stacks waiting to be removed
                                 toBeRemoved.add(sacrifice);
                             }
-                            if (fires == 64) {
-                                fires -= 64;
+                            if (souls == 64) {
+                                souls -= 64;
                                 if (!player.hasPermission("geometricmagic.bypass.hunger")) {
                                     player.setFoodLevel((player.getFoodLevel() - (cost)));
-                                    effectBlock.getWorld().dropItem(effectBlockLocation, new ItemStack(Material.PORTAL, 1));
+                                    effectBlock.getWorld().dropItem(effectBlockLocation, PhiloStone);
                                     Iterator<Item> toBeRemovedit = toBeRemoved.iterator();
                                     while(toBeRemovedit.hasNext()){
                                         // Iterate over the list and remove each stack we used
@@ -1137,6 +1144,7 @@ public class GeometricMagicPlayerListener implements Listener {
         // Soul Circle
 		} else if (arrayString.equals("[2, 2, 2, 3]") && player.hasPermission("geometricmagic.set.2223")) {
 
+
 			cost = (int) (plugin.getConfig().getInt("setcircles.2223.cost") * philosopherStoneModifier(player));
 			if (cost > 20)
 				cost = 20;
@@ -1154,6 +1162,13 @@ public class GeometricMagicPlayerListener implements Listener {
 				int size = setCircleSize(actBlock);
 				List<Entity> entityList = redStack.getNearbyEntities(size + 5, 128, size + 5);
 
+				ItemMeta soulMeta = Bukkit.getItemFactory().getItemMeta(Material.BONE);
+				List<String> lore = new ArrayList<String>();
+				lore.add("Soul of a human.");
+				lore.add("Holds wonderous power, in the right hands...");
+				soulMeta.setDisplayName("Soul");
+				soulMeta.setLore(lore);
+
 				for (int i = 0; i < entityList.size(); i++) {
 					if (entityList.get(i) instanceof Player) {
 						HumanEntity victim = (HumanEntity) entityList.get(i);
@@ -1161,10 +1176,9 @@ public class GeometricMagicPlayerListener implements Listener {
 
 						if (!victim.equals(player)) {
 							victim.getWorld().strikeLightningEffect(victimLocation);
-							if (victim.getInventory().contains(Material.FIRE)) {
+							if (victim.getInventory().contains(Material.BONE)) {
 								for (int k = 0; k < player.getInventory().getSize(); k++) {
-									if (player.getInventory().getItem(i).getType() == Material.FIRE) {
-										// System.out.println("removed a fire");
+									if (player.getInventory().getItem(i).getItemMeta().getDisplayName() == "Soul") {
 										int amount = player.getInventory().getItem(k).getAmount();
 										player.getInventory().getItem(k).setAmount(amount - 1);
 										if (amount - 1 <= 0) {
@@ -1175,8 +1189,9 @@ public class GeometricMagicPlayerListener implements Listener {
 							} else
 								victim.damage(20);
 							if (victim.isDead()) {
-								ItemStack oneFire = new ItemStack(51, 1);
-								victim.getWorld().dropItem(actBlock.getLocation(), oneFire);
+								ItemStack oneSoul = new ItemStack(Material.BONE, 1);
+								oneSoul.setItemMeta(soulMeta);
+								victim.getWorld().dropItem(actBlock.getLocation(), oneSoul);
 							}
 						}
 					}
@@ -1185,8 +1200,9 @@ public class GeometricMagicPlayerListener implements Listener {
 						victim.getWorld().strikeLightningEffect(victim.getLocation());
 						victim.damage(20);
 						if (victim.isDead()) {
-							ItemStack oneFire = new ItemStack(51, 1);
-							victim.getWorld().dropItem(actBlock.getLocation(), oneFire);
+							ItemStack oneSoul = new ItemStack(Material.BONE, 1);
+							oneSoul.setItemMeta(soulMeta);
+							victim.getWorld().dropItem(actBlock.getLocation(), oneSoul);
 						}
 					}
 				}
