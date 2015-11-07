@@ -18,8 +18,8 @@
 
 package me.cakenggt.GeometricMagic;
 
-import net.h31ix.anticheat.api.AnticheatAPI;
-import net.h31ix.anticheat.manage.CheckType;
+import net.dynamicdev.anticheat.api.AntiCheatAPI;
+import net.dynamicdev.anticheat.check.CheckType;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
@@ -141,10 +141,10 @@ public class GeometricMagicTransmutationThread implements Runnable {
 				
 				// exempt player from AntiCheat check
 				if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-					AnticheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
-					AnticheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
-					AnticheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
-					AnticheatAPI.exemptPlayer(player, CheckType.NO_SWING);
+					AntiCheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
+					AntiCheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
+					AntiCheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
+					AntiCheatAPI.exemptPlayer(player, CheckType.NO_SWING);
 				}
 				
 				if (player != null) {
@@ -279,10 +279,10 @@ public class GeometricMagicTransmutationThread implements Runnable {
 				
 				// unexempt player from AntiCheat check
 				if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-					AnticheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
-					AnticheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
-					AnticheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
-					AnticheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
 				}
 			}
 		}, 0L);

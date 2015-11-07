@@ -18,8 +18,8 @@
 
 package me.cakenggt.GeometricMagic;
 
-import net.h31ix.anticheat.api.AnticheatAPI;
-import net.h31ix.anticheat.manage.CheckType;
+import net.dynamicdev.anticheat.api.AntiCheatAPI;
+import net.dynamicdev.anticheat.check.CheckType;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -130,7 +130,7 @@ public class GeometricMagicPlayerListener implements Listener {
 		}
 
 		if (event.getAction() == Action.RIGHT_CLICK_AIR && inHandType == Material.FLINT) {
-			actBlock = player.getTargetBlock(null, 120);
+			actBlock = player.getTargetBlock((Set<Material>)null, 120);
 		}
 
 		World world = player.getWorld();
@@ -182,10 +182,10 @@ public class GeometricMagicPlayerListener implements Listener {
 			try {
 				// exempt player from AntiCheat check
 				if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-					AnticheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
-					AnticheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
-					AnticheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
-					AnticheatAPI.exemptPlayer(player, CheckType.NO_SWING);
+					AntiCheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
+					AntiCheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
+					AntiCheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
+					AntiCheatAPI.exemptPlayer(player, CheckType.NO_SWING);
 				}
 
 				if (circle.equals("0")) {
@@ -196,20 +196,20 @@ public class GeometricMagicPlayerListener implements Listener {
 
 				// unexempt player from AntiCheat check
 				if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-					AnticheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
-					AnticheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
-					AnticheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
-					AnticheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
 				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
 
 				// unexempt player from AntiCheat check
 				if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-					AnticheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
-					AnticheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
-					AnticheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
-					AnticheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
 				}
 			}
 
@@ -328,20 +328,20 @@ public class GeometricMagicPlayerListener implements Listener {
 
 				// exempt player from AntiCheat check
 				if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-					AnticheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
-					AnticheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
-					AnticheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
-					AnticheatAPI.exemptPlayer(player, CheckType.NO_SWING);
+					AntiCheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
+					AntiCheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
+					AntiCheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
+					AntiCheatAPI.exemptPlayer(player, CheckType.NO_SWING);
 				}
 
 				setCircleRemote(player, world, actBlock);
 
 				// unexempt player from AntiCheat check
 				if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-					AnticheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
-					AnticheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
-					AnticheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
-					AnticheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
+					AntiCheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
 				}
 			} else
 				player.sendMessage("You do not have permission to use this circle");
@@ -1873,20 +1873,20 @@ public class GeometricMagicPlayerListener implements Listener {
 				try {
 					// exempt player from AntiCheat check
 					if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-						AnticheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
-						AnticheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
-						AnticheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
-						AnticheatAPI.exemptPlayer(player, CheckType.NO_SWING);
+						AntiCheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
+						AntiCheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
+						AntiCheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
+						AntiCheatAPI.exemptPlayer(player, CheckType.NO_SWING);
 					}
 					
 					storageCircleLoad(startLoc, endLoc, player, size, file);
 					
 					// unexempt player from AntiCheat check
 					if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-						AnticheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
-						AnticheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
-						AnticheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
-						AnticheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
 					}
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
@@ -1897,20 +1897,20 @@ public class GeometricMagicPlayerListener implements Listener {
 				try {
 					// exempt player from AntiCheat check
 					if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-						AnticheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
-						AnticheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
-						AnticheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
-						AnticheatAPI.exemptPlayer(player, CheckType.NO_SWING);
+						AntiCheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
+						AntiCheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
+						AntiCheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
+						AntiCheatAPI.exemptPlayer(player, CheckType.NO_SWING);
 					}
 					
 					storageCircleStore(startLoc, endLoc, player, size, file);
 					
 					// unexempt player from AntiCheat check
 					if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-						AnticheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
-						AnticheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
-						AnticheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
-						AnticheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
 					}
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
@@ -1923,20 +1923,20 @@ public class GeometricMagicPlayerListener implements Listener {
 				try {
 					// exempt player from AntiCheat check
 					if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-						AnticheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
-						AnticheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
-						AnticheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
-						AnticheatAPI.exemptPlayer(player, CheckType.NO_SWING);
+						AntiCheatAPI.exemptPlayer(player, CheckType.FAST_PLACE);
+						AntiCheatAPI.exemptPlayer(player, CheckType.FAST_BREAK);
+						AntiCheatAPI.exemptPlayer(player, CheckType.LONG_REACH);
+						AntiCheatAPI.exemptPlayer(player, CheckType.NO_SWING);
 					}
 					
 					storageCircleStore(startLoc, endLoc, player, size, file);
 					
 					// unexempt player from AntiCheat check
 					if (Bukkit.getServer().getPluginManager().getPlugin("AntiCheat") != null) {
-						AnticheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
-						AnticheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
-						AnticheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
-						AnticheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_PLACE);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.FAST_BREAK);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.LONG_REACH);
+						AntiCheatAPI.unexemptPlayer(player, CheckType.NO_SWING);
 					}
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();

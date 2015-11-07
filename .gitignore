@@ -21,3 +21,7 @@
 # Unknown #
 ###########
 *.orig
+
+# 3rd party Libraries #
+#######################
+libs/
