@@ -1064,6 +1064,7 @@ public class GeometricMagicPlayerListener implements Listener {
 			lore.add("it holds immense power.");
 			philoMeta.setDisplayName("Philosphers Stone");
 			philoMeta.setLore(lore);
+			PhiloStone.setItemMeta(philoMeta);
 			int souls = 0;
             int radius = 2;
             List<Entity> entityList = effectBlock.getWorld().getEntities();
@@ -1085,8 +1086,10 @@ public class GeometricMagicPlayerListener implements Listener {
                             return;
                         }
                         // Main chunk of sacrifice checking here
-                        if (sacrifice.getItemStack().getType() == Material.BONE && sacrifice.getItemStack().getItemMeta().getDisplayName() == "Soul") {
+                        if (sacrifice.getItemStack().getType() == Material.BONE && sacrifice.getItemStack().getItemMeta().getDisplayName().equals("Soul")) {
+													player.sendMessage("Found souls");
                             souls += sacrifice.getItemStack().getAmount();
+													player.sendMessage("Amount: " + souls);
                             if (souls > 64) {
                                 // Handles if we go over. fires should always equal 64 after this, or else we haven't gotten anywhere.
                                 int extraSouls = souls - 64;
@@ -1103,14 +1106,14 @@ public class GeometricMagicPlayerListener implements Listener {
                                 souls -= 64;
                                 if (!player.hasPermission("geometricmagic.bypass.hunger")) {
                                     player.setFoodLevel((player.getFoodLevel() - (cost)));
-                                    effectBlock.getWorld().dropItem(effectBlockLocation, PhiloStone);
-                                    Iterator<Item> toBeRemovedit = toBeRemoved.iterator();
-                                    while(toBeRemovedit.hasNext()){
-                                        // Iterate over the list and remove each stack we used
-                                        Item sacrificed = toBeRemovedit.next();
-                                        sacrificed.remove();
-                                    }
-                                }
+																}
+																effectBlock.getWorld().dropItem(effectBlockLocation, PhiloStone);
+																Iterator<Item> toBeRemovedit = toBeRemoved.iterator();
+																while(toBeRemovedit.hasNext()){
+																		// Iterate over the list and remove each stack we used
+																		Item sacrificed = toBeRemovedit.next();
+																		sacrificed.remove();
+																}
                             }
                         }
                         }
@@ -1161,6 +1164,7 @@ public class GeometricMagicPlayerListener implements Listener {
 				Item redStack = effectBlock.getWorld().dropItem(effectBlockLocation, oneRedstone);
 				int size = setCircleSize(actBlock);
 				List<Entity> entityList = redStack.getNearbyEntities(size + 5, 128, size + 5);
+				redStack.remove();
 
 				ItemMeta soulMeta = Bukkit.getItemFactory().getItemMeta(Material.BONE);
 				List<String> lore = new ArrayList<String>();
@@ -1206,7 +1210,6 @@ public class GeometricMagicPlayerListener implements Listener {
 						}
 					}
 				}
-				redStack.remove();
 			} else {
 				player.sendMessage("You feel so hungry...");
 				return;
